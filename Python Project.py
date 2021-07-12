@@ -1,195 +1,94 @@
 import random
-import os
-import time
+import db as db
 
-# Card class Definition
-class card:
-    def __init__(self, suit, value, cardValve):
+def betAmount():
+    maxBet = db.showMoney()
+    while True:
+        bet = float(input("How much would you like to bet? Pick an amount between 5 and 1000"))
+        if bet <= 4 or bet > 1000:
+            print("You must enter a bet between 5 and 1000")
+            continue
+        if bet > float(maxBet):
+            print("You only have " +maxBet+ "chips left to bet")
+            continue
+        endChips = db.betMoney(bet)
+        return bet
 
-        #Suit of the Card(Spades,Clubs,Hearts,Diamonds)
-        self.suit = suit
-
-        #Value of the Card
-        self.value = value
-
-        #Score Value of the Card
-        self.cardValue = cardValue
-
-#Function to clear the Terminal
-    def clear():
-        os.system("clear")
-
-#Function for Printing the Cards
-    def print_cards(cards, hidden):
-
-        s = ""
-        for card in cards:
-            s = s + "\t ________________"
-        if hidden:
-            s += "\t ________________"
-        print(s)
-
-
-        s = ""
-        for card in cards:
-            s = s + "\t|                |"
-        if hidden:
-            s += "\t|                |"		
-        print(s)
-
-        s = ""
-        for card in cards:
-            if card.value == '10':
-                s = s + "\t|  {}            |".format(card.value)
-            else:
-                s = s + "\t|  {}             |".format(card.value)	
-        if hidden:
-            s += "\t|                |"		
-        print(s)
-
-        s = ""
-        for card in cards:
-            s = s + "\t|                |"
-        if hidden:
-            s += "\t|      * *       |"	
-        print(s)	
-
-        s = ""
-        for card in cards:
-            s = s + "\t|                |"
-        if hidden:
-            s += "\t|    *     *     |"	
-        print(s)	
-
-        s = ""
-        for card in cards:
-            s = s + "\t|                |"
-        if hidden:
-            s += "\t|   *       *    |"	
-        print(s)	
-
-        s = ""
-        for card in cards:
-            s = s + "\t|                |"
-        if hidden:
-            s += "\t|   *       *    |"	
-        print(s)	
-
-        s = ""
-        for card in cards:
-            s = s + "\t|       {}        |".format(card.suit)
-        if hidden:
-            s += "\t|          *     |"	
-        print(s)	
-
-        s = ""
-        for card in cards:
-            s = s + "\t|                |"
-        if hidden:
-            s += "\t|         *      |"	
-        print(s)	
-
-        s = ""
-        for card in cards:
-            s = s + "\t|                |"
-        if hidden:
-            s += "\t|        *       |"	
-        print(s)
-
-        s = ""
-        for card in cards:
-            s = s + "\t|                |"
-        if hidden:
-            s += "\t|                |"	
-        print(s)
-
-        s = ""
-        for card in cards:
-            s = s + "\t|                |"
-        if hidden:
-            s += "\t|                |"	
-        print(s)	
-
-        s = ""
-        for card in cards:
-            if card.value == '10':
-                s = s + "\t|            {}  |".format(card.value)
-            else:
-                s = s + "\t|            {}   |".format(card.value)
-        if hidden:
-            s += "\t|        *       |"			
-        print(s)	
-            
-        s = ""
-        for card in cards:
-            s = s + "\t|________________|"
-        if hidden:
-            s += "\t|________________|"	
-        print(s)		
-
-        print()                       
-
-        #Function for a game of blackjack
-    def blackjackGame(deck):
-
-        #Cards for Dealer and Player
-        playerCards = []
-        dealerCards = []
-
-        # Scores for the Dealer and Player
-        playerScore = 0
-        dealerScore = 0
-
-
-    clear()
-
-    #First dealing for player and dealer
-    while len(playerCards) <2:
-
-        #Deal a random card
-        playerCard =random.choice(deck)
-        playerCards.append(playerCard)
-        deck.remove(playerCard)
-
-        #Update player score
-        playerScore += playerCard.cardValue
-
-        #If both cards are Ace,make the first Ace value 1
-        if len(playerCards) == 2:
-            if playerCards[0].cardValue == 11 and playerCards[1].cardValue == 11:
-                playerCards[0].cardValue = 1
-                playerScore -= 10
-
-        #Print player cards and score
-        print("PLAYER CARDS:")
-        printCards(playerCards, False)
-        print("PLAYER SCORE =",playerScore)
-
-        input()
-
-        #Deal a random card
-        dealerCard = random.choice(deck)
-        dealerCards.append(dealerCard)
-        deck.remove(dealerCard)
-
-        #Update dealer score
-        dealerScore += dealerCard.cardValue
-
-        #Print dealer cards and score,but hide the second card and the score
-        print("DEALER CARDS:")
-        if len(dealerCards) == 1:
-               printCards(dealerCards, False)
-               print("DEALER SCORE =",dealerScore)
+def firstChoice():
+    while True:
+        choice = input("Would you like to play?(Y/N)")
+        if choice.lower() == "y":
+            return choice
+        if choice.lower() == "n":
+            print("Thanks for playing,Goodbye")
+            exit()
         else:
-            printCards(dealerCards[:-1],True)
-            print("DEALER SCORE =" dealerScore - dealerCards[-1].cardValue)
+            print("Invalid input, please enter y or n")
+            continue
 
-        # In case both the cards are Ace, make the second ace value as 1 
-	if len(dealer_cards) == 2:
-		if dealer_cards[0].card_value == 11 and dealer_cards[1].card_value == 11:
-			dealer_cards[1].card_value = 1
-			dealer_score -= 10
+def createCards():
+    suits = ["♠", "♥", "♣", "♦"]
+    ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
+    values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
 
-        input()    
+    deck = []
+    for suit in suits:
+        counter = 0
+        for rank in ranks:
+            createdCard = []
+            createdCard.append(suit)
+            createdCard.append(rank)
+            createdCard.append(values[counter])
+            deck.append(createdCard)
+            counter += 1
+    return deck
 
+def main():
+    deck = createCards()
+    # print welcome message(main)
+    print("THIS IS BLACKJACK!!")
+    print()
+    # get money text file/read balance(db)
+    chips = db.showMoney()
+    print("You have " + chips+ " chips to play with")
+    # get user input "Do you want to play yes or no"(function)
+    choice = firstChoice()
+    # get enter by wager amount(possible function)
+    bet = betAmount()
+# create deck(function,must have global scope)
+# deal to player and dealer(function)
+# get scores(function)
+# print dealer hand with a blank card(main)
+# print player hand(main)
+# check for double aces(main)
+# check for player score(possible function,or while loop)
+    # if player is dealt 21,player wins and wager x1.5 to money
+    # if player score is <= 21,ask player if they want to hit or stand
+    # if player hits,add new card to player hand
+    # if player scores over 21.player busts
 
+# check dealer score(main)
+    # if score is <= 16,and player score is <= 21,dealer must hit and get new card
+    # if dealer gets 21,dealer wins
+    # if dealer gets over 21 they bust
+
+# print player score(main)
+# print dealer score(main)
+# determine who won(main)
+    # player loses if they score less then dealer
+
+#how to win(function)
+    # when player score = dealer score,return player's wager as win
+    # if player loses,no money added
+    # if player score greater then dealer score, player gets wager returned x 1.5
+
+# check avaiable money(function)
+    # check to see if lower then $4, if yes ask if they want to add more money
+
+# check deck length(main)
+    # should be <= 26,if less then 26, half of deck has been used, reshuffle needed
+
+# make new deck
+
+if __name__ == "__main__":
+    main()
