@@ -1,10 +1,20 @@
 import random
 import db as db
-
+import sys
 def addChips():
     while True:
         addChips = input("You don't have enough chips left to bet, would you like to add more? (Y/N)")
-        
+        if addChips.lower() == "y":
+            betWin = db.winMoney(1000)
+            input("1000 chips have been added")
+            break
+        if addChips.lower() != "n":
+            print("You must enter 'y' or 'n', please try again")
+            continue
+        else:
+            print("Sorry but you need chips in order to play,Program will now exit")
+            sys.exit()
+
 
 def determineWin(playerScore, dealerScore):
     if playerScore == dealerScore:
@@ -121,8 +131,6 @@ def main():
         # get scores(function)
         playerScore = getPlayerScore(playerCards)
         dealerScore = getDealerScore(dealerCards)
-        # check for double aces
-
         # check for player score
         if playerScore == 21:
             print("YOU JUST GOT BLACKJACK!!!!!! YOU WIN!!!")
@@ -186,15 +194,20 @@ def main():
             endChips = db.winMoney(bet)
         if checkWin == 1:
             endChips = db.winMoney(bet * 1.5)
-        # check avaiable money
+        # check avaiable money,if lower then $5 ask if they want to add more money
+        if db.showMoney() <= 5:
+            print("You have lost all your chips! Please get some more to continue.")
+            getMoney = addChips()
+        if(addChips()) == db.showMoney():
+            return addChips
+        # check deck length
+        if len(deck) <= 26:
+            print("Half of the deck has been used, reshuffling")
+            deck = createCards()
+            input("Deck has been shuffled, Please hit enter to continue playing")
 
-        # check to see if lower then $4, if yes ask if they want to add more money
-
-    # check deck length(main)
-        # should be <= 26,if less then 26, half of deck has been used, reshuffle needed
-
-    # make new deck
 
 if __name__ == "__main__":
     main()
+
 
