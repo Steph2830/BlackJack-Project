@@ -1,12 +1,46 @@
 import random
 import db as db
 
-def getScores(dealtCards):
-    total = 0
-    for card in dealtCards:
-        score = card[2]
-        total += score
-    return score
+def addChips():
+    while True:
+        addChips = input("You don't have enough chips left to bet, would you like to add more? (Y/N)")
+        
+
+def determineWin(playerScore, dealerScore):
+    if playerScore == dealerScore:
+        print("Game is tied")
+        return 0
+    if playerScore > 21:
+        print("You lost fool")
+        return -1
+    if dealerScore > 21:
+        print("You win, dealer sucks")
+        return 1
+    if playerScore > dealerScore:
+        print("Player Wins")
+        return 1
+    if playerScore < dealerScore:
+        print("Player loses")
+        return -1
+
+
+def getPlayerScore(playerCards):
+    playerScore = 0
+    i = 0
+    for i in range(len(playerCards)):
+        amount = playerCards[i][2]
+        playerScore = playerScore + amount
+        i += 1
+    return playerScore
+
+def getDealerScore(dealerCards):
+    dealerScore = 0
+    i = 0
+    for i in range(len(dealerCards)):
+        amount = dealerCards[i][2]
+        dealerScore = dealerScore + amount
+        i += 1
+    return dealerScore
 
 def betAmount():
     maxBet = db.showMoney()
@@ -57,7 +91,7 @@ def main():
     print()
     # get money text file/read balance
     chips = db.showMoney()
-    print("You have " + chips+ " chips to play with")
+    print("You have " + chips + " chips to play with")
     while True:
         # get user input "Do you want to play yes or no"
         choice = firstChoice()
@@ -85,10 +119,11 @@ def main():
         for card in playerCards:
             print(card[1], card[0])
         # get scores(function)
-        playerScore = getScores(playerCards)
-        dealerScore = getScores(dealerCards)
-        # check for double aces(main)
-        # check for player score(possible function,or while loop)
+        playerScore = getPlayerScore(playerCards)
+        dealerScore = getDealerScore(dealerCards)
+        # check for double aces
+
+        # check for player score
         if playerScore == 21:
             print("YOU JUST GOT BLACKJACK!!!!!! YOU WIN!!!")
             bet = db.winMoney()
@@ -100,7 +135,7 @@ def main():
                 playerCard = random.choice(deck)
                 playerCards.append(playerCard)
                 deck.remove(playerCard)
-                playerScore = getScores(playerCards)
+                playerScore = getPlayerScore(playerCards)
                 print("PLAYER CARDS:")
                 for card in playerCards:
                     print(card[1], card[0])
@@ -114,38 +149,45 @@ def main():
                 print("You must enter either h or s")
                 continue
             # if player scores over 21.player busts
-            if playerScore > 21:
-                print("BUSTEDDDDDDD!!! YOU LOST!")
-                break
-
-        # check dealer score(main)
-        while dealerScore <= 16 and playerScore <= 21:
-            print("Dealer is hitting")
-            dealerCard = random.choice(deck)
-            dealerCards.append(dealerCard)
-            deck.remove(dealerCard)
-            print(dealerCard[1], dealerCard[0])
-            dealerScore = getScores(dealerCards)
-            if dealerScore > 21:
-                print("BUSTEDDDDD!")
+        if playerScore > 21:
+            print("BUSTEDDDDDDD!!! YOU LOST!")
             break
 
-
         # if score is <= 16,and player score is <= 21,dealer must hit and get new card
-        # if dealer gets 21,dealer wins
-        # if dealer gets over 21 they bust
+        while True:
 
-    # print player score(main)
-    # print dealer score(main)
-    # determine who won(main)
-        # player loses if they score less then dealer
+            if playerScore > 21:
+                break
 
-    #how to win(function)
-        # when player score = dealer score,return player's wager as win
-        # if player loses,no money added
-        # if player score greater then dealer score, player gets wager returned x 1.5
+            elif dealerScore > 17:
+                break
 
-    # check avaiable money(function)
+            elif dealerScore <= 16:
+                print("Dealer is hitting")
+                dealerCard = random.choice(deck)
+                dealerCards.append(dealerCard)
+                deck.remove(dealerCard)
+                print(dealerCard[1], dealerCard[0])
+                dealerScore = getDealerScore(dealerCards)
+
+        if dealerScore > 21:
+            print("BUSTEDDDDD!")
+
+        if dealerScore == 21:
+            print("DEALER GOT BLACKJACK!")
+
+        # print player score
+        print("player score " + str(playerScore))
+        # print dealer score
+        print("dealer score " + str(dealerScore))
+        # determine who won
+        checkWin = determineWin(playerScore, dealerScore)
+        if checkWin == 0:
+            endChips = db.winMoney(bet)
+        if checkWin == 1:
+            endChips = db.winMoney(bet * 1.5)
+        # check avaiable money
+
         # check to see if lower then $4, if yes ask if they want to add more money
 
     # check deck length(main)
